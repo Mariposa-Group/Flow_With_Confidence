@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Flash Project</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #player {
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>My Adobe Animate SWF on GitHub</h1>
+    
+    <!-- This container will hold the Ruffle player -->
+    <div id="player"></div>
+
+    <!-- 1. Load the Ruffle library from the official CDN -->
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+
+    <!-- 2. Tell Ruffle to load your SWF file -->
+    <script>
+        window.RufflePlayer = window.RufflePlayer || {};
+        window.RufflePlayer.config = {
+            "autoplay": "on",
+            "unmuteOverlay": "hidden"
+        };
+        
+        window.addEventListener("DOMContentLoaded", () => {
+            const ruffle = window.RufflePlayer.newest();
+            const player = ruffle.createPlayer();
+            const container = document.getElementById("player");
+            
+            container.appendChild(player);
+            
+            // CHANGE "game.swf" to the exact filename of your SWF file!
+            player.load("game.swf"); 
+        });
+    </script>
+
+</body>
+</html>
