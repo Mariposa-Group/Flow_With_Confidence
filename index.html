@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flow With Confidence - FYP</title>
     <style>
-        /* Force page to remove default margins and fill screen */
         html, body {
             margin: 0;
             padding: 0;
@@ -14,7 +13,6 @@
             background-color: #000;
             overflow: hidden;
         }
-        /* Make the Ruffle player expand to fill 100% of the screen */
         #player {
             width: 100%;
             height: 100%;
@@ -24,10 +22,8 @@
 </head>
 <body>
 
-    <!-- This container fills the whole screen -->
     <div id="player"></div>
 
-    <!-- Load Ruffle from CDN -->
     <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
     <script>
         window.RufflePlayer = window.RufflePlayer || {};
@@ -35,8 +31,7 @@
             "autoplay": "on",
             "unmuteOverlay": "hidden",
             "allowScriptAccess": true,
-            // Scales your Flash project to fit the browser window nicely
-            "letterbox": "fullscreen" 
+            "letterbox": "fullscreen"
         };
 
         window.addEventListener("DOMContentLoaded", () => {
@@ -46,8 +41,8 @@
             
             container.appendChild(player);
 
-            // Loads your exact file with proper web-safe spacing code
-            player.load("flow%20with%20confidence%20%281%29.swf"); 
+            // Points directly to the clean, space-free filename
+            player.load("flow_with_confidence.swf"); 
         });
     </script>
 </body>
