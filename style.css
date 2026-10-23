@@ -24,20 +24,21 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Pastikan kontainer utama selalu memenuhi layar */
 #player-container {
     position: relative;
     width: 100vw;
     height: 100vh;
-    background-color: #a6f2eb;
+    overflow: hidden;
 }
 
-/* Fullscreen Toggle Button (Top-Left) */
+/* Penyesuaian ukuran tombol layar penuh di kiri atas */
 #fullscreen-btn {
     position: fixed;
-    top: 25px;
-    left: 35px;
-    width: 60px;
-    height: 60px;
+    top: 15px;
+    left: 15px;
+    width: 48px;
+    height: 48px;
     background-color: #FFFFFF;
     border: none;
     border-radius: 50%;
@@ -45,38 +46,29 @@ body {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 99999;
-    /* Higher than overlays and skip button */
-    padding: 0;
-}
-
-#fullscreen-btn:hover {
-    transform: translateY(-3px) scale(1.05);
 }
 
 #fullscreen-btn svg {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     fill: #52B2EC;
-    transition: fill 0.2s ease;
 }
 
-#fullscreen-btn:hover svg {
-    fill: #B033FF;
-}
+/* Pesan arahan jika HP dipegang tegak (opsional) */
+@media screen and (orientation: portrait) and (max-width: 768px) {
+    #start-app-btn {
+        font-size: 1.5rem;
+        padding: 15px 30px;
+    }
 
-/* Force Horizontal / Landscape View on Mobile and Tablet Portrait Modes */
-@media screen and (orientation: portrait) {
-    #player-container {
-        transform: rotate(90deg);
-        transform-origin: bottom left;
-        width: 100vh !important;
-        height: 100vw !important;
-        position: absolute;
-        top: -100vw;
-        left: 0;
+    .menu-title {
+        font-size: 3rem;
+    }
+
+    .menu-subtitle {
+        font-size: 5rem;
     }
 }
 

@@ -2,9 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 1. DOM ELEMENT SELECTION
     // ==========================================
-    // Fullscreen & Orientation Lock Logic
-const fullscreenBtn = document.getElementById("fullscreen-btn");
-const fullscreenIcon = document.getElementById("fullscreen-icon");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    const fullscreenIcon = document.getElementById("fullscreen-icon");
 
     const startOverlay = document.getElementById("start-overlay");
     const startAppBtn = document.getElementById("start-app-btn");
@@ -128,8 +127,6 @@ const fullscreenIcon = document.getElementById("fullscreen-icon");
     const btnSetBm = document.getElementById("btn-set-bm");
     const btnSetEn = document.getElementById("btn-set-en");
 
-    
-
     // ==========================================
     // 2. STATE MANAGEMENT & BGM SETUP
     // ==========================================
@@ -139,13 +136,70 @@ const fullscreenIcon = document.getElementById("fullscreen-icon");
 
     let currentScore = 0;
     let currentQuestionIndex = 0;
-    let activeQuizCategory = "asas"; // "asas", "penjagaan", atau "kesihatan"
+    let activeQuizCategory = "asas";
 
     // ==========================================
-    // KUMPULAN DATA KUIZ (3 CATEGORIES x 8 QUESTIONS)
+    // FULLSCREEN & ORIENTATION LOCK LOGIC
+    // ==========================================
+    async function toggleFullscreen() {
+        try {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                // Masuk Fullscreen
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    await elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    await elem.webkitRequestFullscreen();
+                }
+
+                // Kunci skrin ke mod lanskap pada telefon/tablet
+                if (screen.orientation && screen.orientation.lock) {
+                    await screen.orientation.lock("landscape").catch((err) => {
+                        console.log("Penguncian orientasi tidak didukung atau disekat:", err);
+                    });
+                }
+            } else {
+                // Keluar Fullscreen
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    await document.webkitExitFullscreen();
+                }
+
+                if (screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            }
+        } catch (err) {
+            console.error("Gagal menukar skrin penuh:", err);
+        }
+    }
+
+    function updateFullscreenIcon() {
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+
+        if (fullscreenIcon) {
+            if (isFullscreen) {
+                // Ikon kecilkan skrin
+                fullscreenIcon.innerHTML = `<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>`;
+            } else {
+                // Ikon besarkan skrin
+                fullscreenIcon.innerHTML = `<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>`;
+            }
+        }
+    }
+
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener("click", toggleFullscreen);
+    }
+
+    document.addEventListener("fullscreenchange", updateFullscreenIcon);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
+
+    // ==========================================
+    // KUMPULAN DATA KUIZ
     // ==========================================
     const quizCategories = {
-        // --- 1. KUIZ ASAS ---
         asas: [
             {
                 question: {
@@ -244,8 +298,6 @@ const fullscreenIcon = document.getElementById("fullscreen-icon");
                 ]
             }
         ],
-
-        // --- 2. KUIZ PENJAGAAN ---
         penjagaan: [
             {
                 question: {
@@ -344,8 +396,6 @@ const fullscreenIcon = document.getElementById("fullscreen-icon");
                 ]
             }
         ],
-
-        // --- 3. KUIZ KESIHATAN & KESEDARAN ---
         kesihatan: [
             {
                 question: {
@@ -448,7 +498,9 @@ const fullscreenIcon = document.getElementById("fullscreen-icon");
 
     const bgMusic = new Audio("assets/bgm.mp3");
     bgMusic.loop = true;
-    bgMusic.volume = volumeSlider.value / 100;
+    if (volumeSlider) {
+        bgMusic.volume = volumeSlider.value / 100;
+    }
 
     if (video2) video2.load();
 
@@ -476,83 +528,29 @@ const fullscreenIcon = document.getElementById("fullscreen-icon");
         });
     }
 
-    function toggleFullscreen() {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        // Enter Fullscreen
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { /* Safari / iOS */
-            elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { /* IE/Edge */
-            elem.msRequestFullscreen();
-        }
-
-        // Lock screen orientation to landscape on mobile/tablet devices
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock("landscape").catch((err) => {
-                console.log("Orientation lock not supported or blocked by device:", err);
-            });
-        }
-    } else {
-        // Exit Fullscreen
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-
-        if (screen.orientation && screen.orientation.unlock) {
-            screen.orientation.unlock();
-        }
-    }
-}
-
-// Update Icon on Fullscreen Change (including when pressing Esc)
-function updateFullscreenIcon() {
-    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-    
-    if (isFullscreen) {
-        // Compress / Exit Fullscreen SVG Icon
-        fullscreenIcon.innerHTML = `<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>`;
-    } else {
-        // Expand / Enter Fullscreen SVG Icon
-        fullscreenIcon.innerHTML = `<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>`;
-    }
-}
-
-if (fullscreenBtn) {
-    fullscreenBtn.addEventListener("click", toggleFullscreen);
-}
-
-// Listen for native escape key or browser-level screen changes
-document.addEventListener("fullscreenchange", updateFullscreenIcon);
-document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
-document.addEventListener("msfullscreenchange", updateFullscreenIcon);
-
     // Control Volume & Dynamic Track Color Gradient
     function setVolume(val) {
         let clampedVal = Math.max(0, Math.min(100, val));
 
-        volumeSlider.value = clampedVal;
-        volumePercentage.textContent = clampedVal + "%";
-
-        let percent = clampedVal;
-        volumeSlider.style.background = `linear-gradient(to right, #E70B90 ${percent}%, #FFCCE5 ${percent}%)`;
+        if (volumeSlider) {
+            volumeSlider.value = clampedVal;
+            volumeSlider.style.background = `linear-gradient(to right, #E70B90 ${clampedVal}%, #FFCCE5 ${clampedVal}%)`;
+        }
+        if (volumePercentage) volumePercentage.textContent = clampedVal + "%";
 
         if (bgMusic) {
             bgMusic.volume = clampedVal / 100;
         }
     }
 
-    setVolume(volumeSlider.value);
+    if (volumeSlider) {
+        setVolume(volumeSlider.value);
+        volumeSlider.addEventListener("input", (e) => setVolume(e.target.value));
+    }
 
-    volumeSlider.addEventListener("input", (e) => setVolume(e.target.value));
-    btnVolumeUp.addEventListener("click", () => setVolume(parseInt(volumeSlider.value) + 10));
-    btnVolumeDown.addEventListener("click", () => setVolume(parseInt(volumeSlider.value) - 10));
-    btnMute.addEventListener("click", () => setVolume(0));
+    if (btnVolumeUp) btnVolumeUp.addEventListener("click", () => setVolume(parseInt(volumeSlider.value) + 10));
+    if (btnVolumeDown) btnVolumeDown.addEventListener("click", () => setVolume(parseInt(volumeSlider.value) - 10));
+    if (btnMute) btnMute.addEventListener("click", () => setVolume(0));
 
     // ==========================================
     // 4. SCENE 2 & INTRO VIDEO FLOW
@@ -616,155 +614,195 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
         if (scene4Overlay) scene4Overlay.style.display = "flex";
     }
 
-    // Navigasi Chapter & Menu Utama
-    btnChapter.addEventListener("click", () => {
-        scene4Overlay.style.display = "none";
-        scene6Overlay.style.display = "flex";
-    });
+    if (btnChapter) {
+        btnChapter.addEventListener("click", () => {
+            if (scene4Overlay) scene4Overlay.style.display = "none";
+            if (scene6Overlay) scene6Overlay.style.display = "flex";
+        });
+    }
 
-    settingsBtn.addEventListener("click", () => {
-        previousScene = "scene4";
-        scene4Overlay.style.display = "none";
-        settingsOverlay.style.display = "flex";
-    });
+    if (settingsBtn) {
+        settingsBtn.addEventListener("click", () => {
+            previousScene = "scene4";
+            if (scene4Overlay) scene4Overlay.style.display = "none";
+            if (settingsOverlay) settingsOverlay.style.display = "flex";
+        });
+    }
 
-    scene6SettingsBtn.addEventListener("click", () => {
-        previousScene = "scene6";
-        scene6Overlay.style.display = "none";
-        settingsOverlay.style.display = "flex";
-    });
+    if (scene6SettingsBtn) {
+        scene6SettingsBtn.addEventListener("click", () => {
+            previousScene = "scene6";
+            if (scene6Overlay) scene6Overlay.style.display = "none";
+            if (settingsOverlay) settingsOverlay.style.display = "flex";
+        });
+    }
 
-    scene6HomeBtn.addEventListener("click", () => {
-        scene6Overlay.style.display = "none";
-        scene4Overlay.style.display = "flex";
-    });
+    if (scene6HomeBtn) {
+        scene6HomeBtn.addEventListener("click", () => {
+            if (scene6Overlay) scene6Overlay.style.display = "none";
+            if (scene4Overlay) scene4Overlay.style.display = "flex";
+        });
+    }
 
-    // Sub-Menu Asas
-    btnAsas.addEventListener("click", () => {
-        scene6Overlay.style.display = "none";
-        scene7Overlay.style.display = "flex";
-    });
+    if (btnAsas) {
+        btnAsas.addEventListener("click", () => {
+            if (scene6Overlay) scene6Overlay.style.display = "none";
+            if (scene7Overlay) scene7Overlay.style.display = "flex";
+        });
+    }
 
-    scene7BackBtn.addEventListener("click", () => {
-        scene7Overlay.style.display = "none";
-        scene6Overlay.style.display = "flex";
-    });
+    if (scene7BackBtn) {
+        scene7BackBtn.addEventListener("click", () => {
+            if (scene7Overlay) scene7Overlay.style.display = "none";
+            if (scene6Overlay) scene6Overlay.style.display = "flex";
+        });
+    }
 
-    scene7HomeBtn.addEventListener("click", () => {
-        scene7Overlay.style.display = "none";
-        scene4Overlay.style.display = "flex";
-    });
+    if (scene7HomeBtn) {
+        scene7HomeBtn.addEventListener("click", () => {
+            if (scene7Overlay) scene7Overlay.style.display = "none";
+            if (scene4Overlay) scene4Overlay.style.display = "flex";
+        });
+    }
 
-    scene7SettingsBtn.addEventListener("click", () => {
-        previousScene = "scene7";
-        scene7Overlay.style.display = "none";
-        settingsOverlay.style.display = "flex";
-    });
+    if (scene7SettingsBtn) {
+        scene7SettingsBtn.addEventListener("click", () => {
+            previousScene = "scene7";
+            if (scene7Overlay) scene7Overlay.style.display = "none";
+            if (settingsOverlay) settingsOverlay.style.display = "flex";
+        });
+    }
 
-    // Sub-Menu Penjagaan
-    btnPenjagaan.addEventListener("click", () => {
-        scene6Overlay.style.display = "none";
-        scene8Overlay.style.display = "flex";
-    });
+    if (btnPenjagaan) {
+        btnPenjagaan.addEventListener("click", () => {
+            if (scene6Overlay) scene6Overlay.style.display = "none";
+            if (scene8Overlay) scene8Overlay.style.display = "flex";
+        });
+    }
 
-    scene8BackBtn.addEventListener("click", () => {
-        scene8Overlay.style.display = "none";
-        scene6Overlay.style.display = "flex";
-    });
+    if (scene8BackBtn) {
+        scene8BackBtn.addEventListener("click", () => {
+            if (scene8Overlay) scene8Overlay.style.display = "none";
+            if (scene6Overlay) scene6Overlay.style.display = "flex";
+        });
+    }
 
-    scene8HomeBtn.addEventListener("click", () => {
-        scene8Overlay.style.display = "none";
-        scene4Overlay.style.display = "flex";
-    });
+    if (scene8HomeBtn) {
+        scene8HomeBtn.addEventListener("click", () => {
+            if (scene8Overlay) scene8Overlay.style.display = "none";
+            if (scene4Overlay) scene4Overlay.style.display = "flex";
+        });
+    }
 
-    scene8SettingsBtn.addEventListener("click", () => {
-        previousScene = "scene8";
-        scene8Overlay.style.display = "none";
-        settingsOverlay.style.display = "flex";
-    });
+    if (scene8SettingsBtn) {
+        scene8SettingsBtn.addEventListener("click", () => {
+            previousScene = "scene8";
+            if (scene8Overlay) scene8Overlay.style.display = "none";
+            if (settingsOverlay) settingsOverlay.style.display = "flex";
+        });
+    }
 
-    // Sub-Menu Kesihatan
-    btnKesihatan.addEventListener("click", () => {
-        scene6Overlay.style.display = "none";
-        scene9Overlay.style.display = "flex";
-    });
+    if (btnKesihatan) {
+        btnKesihatan.addEventListener("click", () => {
+            if (scene6Overlay) scene6Overlay.style.display = "none";
+            if (scene9Overlay) scene9Overlay.style.display = "flex";
+        });
+    }
 
-    scene9BackBtn.addEventListener("click", () => {
-        scene9Overlay.style.display = "none";
-        scene6Overlay.style.display = "flex";
-    });
+    if (scene9BackBtn) {
+        scene9BackBtn.addEventListener("click", () => {
+            if (scene9Overlay) scene9Overlay.style.display = "none";
+            if (scene6Overlay) scene6Overlay.style.display = "flex";
+        });
+    }
 
-    scene9HomeBtn.addEventListener("click", () => {
-        scene9Overlay.style.display = "none";
-        scene4Overlay.style.display = "flex";
-    });
+    if (scene9HomeBtn) {
+        scene9HomeBtn.addEventListener("click", () => {
+            if (scene9Overlay) scene9Overlay.style.display = "none";
+            if (scene4Overlay) scene4Overlay.style.display = "flex";
+        });
+    }
 
-    scene9SettingsBtn.addEventListener("click", () => {
-        previousScene = "scene9";
-        scene9Overlay.style.display = "none";
-        settingsOverlay.style.display = "flex";
-    });
+    if (scene9SettingsBtn) {
+        scene9SettingsBtn.addEventListener("click", () => {
+            previousScene = "scene9";
+            if (scene9Overlay) scene9Overlay.style.display = "none";
+            if (settingsOverlay) settingsOverlay.style.display = "flex";
+        });
+    }
 
-    btnSetBm.addEventListener("click", () => {
-        selectedLang = "ms";
-        updateLocalizationUI();
-    });
+    if (btnSetBm) {
+        btnSetBm.addEventListener("click", () => {
+            selectedLang = "ms";
+            updateLocalizationUI();
+        });
+    }
 
-    btnSetEn.addEventListener("click", () => {
-        selectedLang = "en";
-        updateLocalizationUI();
-    });
+    if (btnSetEn) {
+        btnSetEn.addEventListener("click", () => {
+            selectedLang = "en";
+            updateLocalizationUI();
+        });
+    }
 
-    // Navigasi Scene 10 (Menu Kuiz)
-    btnQuiz.addEventListener("click", () => {
-        scene4Overlay.style.display = "none";
-        scene10Overlay.style.display = "flex";
-    });
+    if (btnQuiz) {
+        btnQuiz.addEventListener("click", () => {
+            if (scene4Overlay) scene4Overlay.style.display = "none";
+            if (scene10Overlay) scene10Overlay.style.display = "flex";
+        });
+    }
 
-    scene10SettingsBtn.addEventListener("click", () => {
-        previousScene = "scene10";
-        scene10Overlay.style.display = "none";
-        settingsOverlay.style.display = "flex";
-    });
+    if (scene10SettingsBtn) {
+        scene10SettingsBtn.addEventListener("click", () => {
+            previousScene = "scene10";
+            if (scene10Overlay) scene10Overlay.style.display = "none";
+            if (settingsOverlay) settingsOverlay.style.display = "flex";
+        });
+    }
 
-    scene10HomeBtn.addEventListener("click", () => {
-        scene10Overlay.style.display = "none";
-        scene4Overlay.style.display = "flex";
-    });
+    if (scene10HomeBtn) {
+        scene10HomeBtn.addEventListener("click", () => {
+            if (scene10Overlay) scene10Overlay.style.display = "none";
+            if (scene4Overlay) scene4Overlay.style.display = "flex";
+        });
+    }
 
-    // Navigasi Settings (Scene 5)
-    backBtn.addEventListener("click", () => {
-        settingsOverlay.style.display = "none";
-        if (previousScene === "scene12") {
-            if (scene12Overlay) scene12Overlay.style.display = "flex";
-        } else if (previousScene === "scene11") {
-            scene11Overlay.style.display = "flex";
-        } else if (previousScene === "scene10") {
-            scene10Overlay.style.display = "flex";
-        } else if (previousScene === "scene9") {
-            scene9Overlay.style.display = "flex";
-        } else if (previousScene === "scene8") {
-            scene8Overlay.style.display = "flex";
-        } else if (previousScene === "scene7") {
-            scene7Overlay.style.display = "flex";
-        } else if (previousScene === "scene6") {
-            scene6Overlay.style.display = "flex";
-        } else {
-            scene4Overlay.style.display = "flex";
-        }
-    });
+    if (backBtn) {
+        backBtn.addEventListener("click", () => {
+            if (settingsOverlay) settingsOverlay.style.display = "none";
+            if (previousScene === "scene12") {
+                if (scene12Overlay) scene12Overlay.style.display = "flex";
+            } else if (previousScene === "scene11") {
+                if (scene11Overlay) scene11Overlay.style.display = "flex";
+            } else if (previousScene === "scene10") {
+                if (scene10Overlay) scene10Overlay.style.display = "flex";
+            } else if (previousScene === "scene9") {
+                if (scene9Overlay) scene9Overlay.style.display = "flex";
+            } else if (previousScene === "scene8") {
+                if (scene8Overlay) scene8Overlay.style.display = "flex";
+            } else if (previousScene === "scene7") {
+                if (scene7Overlay) scene7Overlay.style.display = "flex";
+            } else if (previousScene === "scene6") {
+                if (scene6Overlay) scene6Overlay.style.display = "flex";
+            } else {
+                if (scene4Overlay) scene4Overlay.style.display = "flex";
+            }
+        });
+    }
 
-    homeBtn.addEventListener("click", () => {
-        settingsOverlay.style.display = "none";
-        scene6Overlay.style.display = "none";
-        scene7Overlay.style.display = "none";
-        scene8Overlay.style.display = "none";
-        scene9Overlay.style.display = "none";
-        scene10Overlay.style.display = "none";
-        scene11Overlay.style.display = "none";
-        if (scene12Overlay) scene12Overlay.style.display = "none";
-        scene4Overlay.style.display = "flex";
-    });
+    if (homeBtn) {
+        homeBtn.addEventListener("click", () => {
+            if (settingsOverlay) settingsOverlay.style.display = "none";
+            if (scene6Overlay) scene6Overlay.style.display = "none";
+            if (scene7Overlay) scene7Overlay.style.display = "none";
+            if (scene8Overlay) scene8Overlay.style.display = "none";
+            if (scene9Overlay) scene9Overlay.style.display = "none";
+            if (scene10Overlay) scene10Overlay.style.display = "none";
+            if (scene11Overlay) scene11Overlay.style.display = "none";
+            if (scene12Overlay) scene12Overlay.style.display = "none";
+            if (scene4Overlay) scene4Overlay.style.display = "flex";
+        });
+    }
 
     // ==========================================
     // 6. SCENE 11 & 12: LOGIK KUIZ & SOALAN
@@ -785,23 +823,12 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
 
         const isEn = selectedLang === "en";
 
-        // Jika skor 0 atau negatif (<= 0)
         if (currentScore <= 0) {
-            if (resultCongrats) {
-                resultCongrats.textContent = isEn ? "Oh no!" : "Ohh tidak!";
-            }
-            if (resultMotto) {
-                resultMotto.textContent = isEn ? "Keep up the effort" : "Teruskan usaha!";
-            }
-        } 
-        // Jika skor 1 hingga 8 (atau lebih besar daripada 0)
-        else {
-            if (resultCongrats) {
-                resultCongrats.textContent = isEn ? "Congratulations!" : "Tahniah!";
-            }
-            if (resultMotto) {
-                resultMotto.textContent = isEn ? "Effort is the key to success!" : "Usaha tangga kejayaan!";
-            }
+            if (resultCongrats) resultCongrats.textContent = isEn ? "Oh no!" : "Ohh tidak!";
+            if (resultMotto) resultMotto.textContent = isEn ? "Keep up the effort" : "Teruskan usaha!";
+        } else {
+            if (resultCongrats) resultCongrats.textContent = isEn ? "Congratulations!" : "Tahniah!";
+            if (resultMotto) resultMotto.textContent = isEn ? "Effort is the key to success!" : "Usaha tangga kejayaan!";
         }
     }
 
@@ -820,24 +847,21 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
 
         quizQuestionText.textContent = q.question[lang];
 
-        // Tetapkan teks jawapan
         optA.textContent = q.options[0].text[lang];
         optB.textContent = q.options[1].text[lang];
         optC.textContent = q.options[2].text[lang];
         optD.textContent = q.options[3].text[lang];
     }
 
-    // Semakan Jawapan Berdasarkan Indeks Butang
     const optionsList = [optA, optB, optC, optD];
 
     optionsList.forEach((btn, optionIndex) => {
         if (!btn) return;
-        
+
         btn.addEventListener("click", () => {
             const currentCategoryQuestions = quizCategories[activeQuizCategory] || quizCategories["asas"];
             const currentQ = currentCategoryQuestions[currentQuestionIndex];
-            
-            // Semak status kebenaran
+
             const isCorrect = currentQ.options[optionIndex].isCorrect;
 
             if (isCorrect) {
@@ -848,13 +872,11 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
 
             updateScoreDisplay();
 
-            // Pindah ke soalan seterusnya
             currentQuestionIndex++;
             loadQuestion();
         });
     });
 
-    // Mula Kuiz berdasarkan Kategori yang Dipilih
     function startCategoryQuiz(categoryKey) {
         activeQuizCategory = categoryKey;
         currentScore = 0;
@@ -872,19 +894,10 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
         if (scene11Overlay) scene11Overlay.style.display = "flex";
     }
 
-    if (btnQuizAsas) {
-        btnQuizAsas.addEventListener("click", () => startCategoryQuiz("asas"));
-    }
+    if (btnQuizAsas) btnQuizAsas.addEventListener("click", () => startCategoryQuiz("asas"));
+    if (btnQuizPenjagaan) btnQuizPenjagaan.addEventListener("click", () => startCategoryQuiz("penjagaan"));
+    if (btnQuizKesihatan) btnQuizKesihatan.addEventListener("click", () => startCategoryQuiz("kesihatan"));
 
-    if (btnQuizPenjagaan) {
-        btnQuizPenjagaan.addEventListener("click", () => startCategoryQuiz("penjagaan"));
-    }
-
-    if (btnQuizKesihatan) {
-        btnQuizKesihatan.addEventListener("click", () => startCategoryQuiz("kesihatan"));
-    }
-
-    // Navigasi Scene 11
     if (scene11BackBtn) {
         scene11BackBtn.addEventListener("click", () => {
             if (scene11Overlay) scene11Overlay.style.display = "none";
@@ -907,7 +920,6 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
         });
     }
 
-    // Navigasi Scene 12 (Paparan Keputusan Kuiz)
     if (scene12HomeBtn) {
         scene12HomeBtn.addEventListener("click", () => {
             if (scene12Overlay) scene12Overlay.style.display = "none";
@@ -931,7 +943,7 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
     }
 
     // ==========================================
-    // 7. LOCALIZATION (PENETAPAN BUKTI BAHASA)
+    // 7. LOCALIZATION
     // ==========================================
     function updateLocalizationUI() {
         if (selectedLang === "en") {
@@ -978,7 +990,6 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
             if (labelQuizKesihatan) labelQuizKesihatan.innerHTML = "Health &amp;<br>Awareness Quiz";
             if (labelScore) labelScore.textContent = "Score";
 
-            // Teks Paparan Keputusan (Scene 12)
             if (currentScore <= 0) {
                 if (resultCongrats) resultCongrats.textContent = "Oh no!";
                 if (resultMotto) resultMotto.textContent = "Keep up the effort";
@@ -1032,7 +1043,6 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
             if (labelQuizKesihatan) labelQuizKesihatan.innerHTML = "Kuiz Kesihatan &amp;<br>Kesedaran";
             if (labelScore) labelScore.textContent = "Skor";
 
-            // Teks Paparan Keputusan (Scene 12)
             if (currentScore <= 0) {
                 if (resultCongrats) resultCongrats.textContent = "Ohh tidak!";
                 if (resultMotto) resultMotto.textContent = "Teruskan usaha!";
@@ -1043,7 +1053,6 @@ document.addEventListener("msfullscreenchange", updateFullscreenIcon);
             if (resultScoreLabel) resultScoreLabel.textContent = "Skor anda:";
         }
 
-        // Muat soalan baru jika Scene 11 sedang terbuka
         if (scene11Overlay && scene11Overlay.style.display === "flex") {
             loadQuestion();
         }
