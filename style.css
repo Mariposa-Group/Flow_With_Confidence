@@ -1,7 +1,18 @@
+@font-face {
+    font-family: 'Dream Orphans Regular';
+    src: url('assets/fonts/DreamOrphans-Regular.ttf') format('truetype');
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
+    /* Menghalang highlight/selection teks */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 html,
@@ -18,6 +29,55 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: #a6f2eb;
+}
+
+/* Fullscreen Toggle Button (Top-Left) */
+#fullscreen-btn {
+    position: fixed;
+    top: 25px;
+    left: 35px;
+    width: 60px;
+    height: 60px;
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    z-index: 99999;
+    /* Higher than overlays and skip button */
+    padding: 0;
+}
+
+#fullscreen-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+}
+
+#fullscreen-btn svg {
+    width: 32px;
+    height: 32px;
+    fill: #52B2EC;
+    transition: fill 0.2s ease;
+}
+
+#fullscreen-btn:hover svg {
+    fill: #B033FF;
+}
+
+/* Force Horizontal / Landscape View on Mobile and Tablet Portrait Modes */
+@media screen and (orientation: portrait) {
+    #player-container {
+        transform: rotate(90deg);
+        transform-origin: bottom left;
+        width: 100vh !important;
+        height: 100vw !important;
+        position: absolute;
+        top: -100vw;
+        left: 0;
+    }
 }
 
 /* ==========================================
@@ -39,11 +99,11 @@ body {
 #start-app-btn {
     padding: 24px 60px;
     font-size: 2.2rem;
-    font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+    font-family: "Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif;
     font-weight: bold;
     color: #990184;
     background-color: #CFE1F7;
-    border: 5px solid #CC3399;
+    border: 4px solid #CC3399;
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
@@ -51,12 +111,8 @@ body {
 }
 
 #start-app-btn:hover {
-    transform: scale(1.06);
+    transform: translateY(-4px) scale(1.02);
     background-color: #FFFFCC;
-}
-
-#start-app-btn:active {
-    transform: scale(0.98);
 }
 
 /* ==========================================
@@ -82,6 +138,9 @@ body {
 /* ==========================================
    SCENE 2: LANGUAGE SELECTION OVERLAY
    ========================================== */
+/* ==========================================
+   SCENE 2: LANGUAGE SELECTION OVERLAY
+   ========================================== */
 #language-overlay {
     display: none;
     position: absolute;
@@ -98,19 +157,27 @@ body {
 }
 
 .lang-btn {
-    border: 6px solid #CC3399;
+    position: relative;
+    border: 5px solid #CC3399;
     color: #E70B90;
-    padding: 28px 30px;
+    height: 90px;
+    /* Tetapkan tinggi butang */
     font-size: 2.5rem;
     font-family: "Franklin Gothic Heavy", "Franklin Gothic Medium", "Arial Black", sans-serif;
     font-weight: 900;
     border-radius: 65px;
     cursor: pointer;
-    width: 520px;
+    width: 550px;
     max-width: 90vw;
     text-align: center;
     white-space: nowrap;
-    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 60px;
+    /* Space for flag icon */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 #btn-bm {
@@ -121,20 +188,41 @@ body {
     background-color: #CCFFFF;
 }
 
-#btn-bm:hover,
-#btn-en:hover,
 .lang-btn:hover {
-    transform: translateY(6px);
+    transform: translateY(-4px);
     background-color: #FFCCFF !important;
-    border-color: #CC3399;
-    color: #E70B90;
 }
 
-.lang-btn:active {
-    transform: translateY(9px);
+/* Specific position alignment for flags in Scene 2 */
+#language-overlay .flag-icon {
+    position: absolute;
+    left: -5px;
+    /* Kedudukan melekap kemas pada tepi kiri */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 90px;
+    /* Saiz sama tinggi dengan butang */
+    height: 90px;
+    /* Saiz sama tinggi dengan butang */
+    border-radius: 50%;
+    border: 5px solid #CC3399;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.18);
+    z-index: 5;
 }
 
-/* Footer Logo Styling */
+#btn-bm {
+    background-color: #CFE1F7;
+}
+
+#btn-en {
+    background-color: #CCFFFF;
+}
+
+.lang-btn:hover {
+    transform: translateY(-4px);
+    background-color: #FFCCFF !important;
+}
+
 .footer-logo {
     position: absolute;
     bottom: 35px;
@@ -158,8 +246,8 @@ body {
     font-style: italic;
     font-weight: normal;
     font-size: 2.8rem;
-    margin-top: -8px;
-    line-height: 0.9;
+    margin-top: 4px;
+    line-height: 0.5;
 }
 
 /* ==========================================
@@ -170,7 +258,7 @@ body {
     position: absolute;
     top: 25px;
     right: 35px;
-    z-index: 150;
+    z-index: 9999 !important;
     width: 160px;
     height: 52px;
     justify-content: center;
@@ -182,45 +270,21 @@ body {
     font-family: "Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif;
     font-size: 1.4rem;
     font-weight: bold;
-    white-space: nowrap;
     border-radius: 30px;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 #skip-btn:hover {
-    transform: translateY(4px);
+    transform: translateY(-4px);
     background-color: #FFCCFF;
-    border-color: #339933;
-    color: #009966;
-}
-
-#skip-btn:active {
-    transform: translateY(6px);
 }
 
 /* ==========================================
-   SCENE 4: MAIN MENU STYLING
+   GEAR / SETTINGS BUTTON (TANPA BORDER & IKON KEMAS)
    ========================================== */
-#scene4-overlay {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('assets/bg-homepage.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 200;
-}
-
-#settings-btn {
+.gear-btn {
     position: absolute;
     top: 28px;
     right: 42px;
@@ -236,21 +300,41 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     transition: transform 0.2s ease;
     z-index: 210;
+    padding: 0;
 }
 
-#settings-btn .gear-icon {
-    width: 60px;
-    height: 60px;
+.gear-btn .gear-icon {
+    width: 42px;
+    height: 42px;
     fill: #52B2EC;
     transition: fill 0.2s ease;
 }
 
-#settings-btn:hover {
-    transform: scale(1.08) rotate(15deg);
+.gear-btn:hover {
+    transform: translateY(-4px) rotate(15deg);
 }
 
-#settings-btn:hover .gear-icon {
+.gear-btn:hover .gear-icon {
     fill: #B033FF;
+}
+
+/* ==========================================
+   SCENE 4: MAIN MENU STYLING
+   ========================================== */
+#scene4-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/bg-homepage.jpg');
+    background-size: cover;
+    background-position: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
 }
 
 .menu-header {
@@ -302,17 +386,12 @@ body {
     text-align: center;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .menu-btn:hover {
-    transform: translateY(3px);
+    transform: translateY(-4px);
     background-color: #FFFFCC !important;
-    border-color: #CC3399;
-}
-
-.menu-btn:active {
-    transform: translateY(5px);
 }
 
 /* ==========================================
@@ -325,10 +404,9 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-image: url('assets/setting-page.png');
+    background-image: url('assets/Setting Page.png');
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
@@ -340,14 +418,12 @@ body {
     font-family: "Cooper Black", "Arial Black", sans-serif;
     color: #E70B90;
     font-size: 5rem;
-    font-weight: normal;
     text-align: center;
     margin-bottom: 25px;
-    letter-spacing: 1px;
 }
 
-/* Home Button */
-#home-btn {
+#home-btn,
+.home-circle-btn {
     position: absolute;
     bottom: 25px;
     left: 35px;
@@ -365,17 +441,27 @@ body {
     z-index: 310;
 }
 
-#home-btn:hover {
-    transform: scale(1.08);
+#home-btn:hover,
+.home-circle-btn:hover {
+    transform: translateY(-4px) scale(1.05);
 }
 
-#home-btn svg {
-    width: 52px;
-    height: 52px;
+/* Base state for SVG and transition */
+#home-btn svg,
+.home-circle-btn svg {
+    width: 48px;
+    height: 48px;
     fill: #52B2EC;
+    transition: fill 0.2s ease;
+    /* Smooth color change */
 }
 
-/* Grid Utama Konten (Dibesarkan & Diberi Ruang Selesa) */
+/* Target SVG when button is hovered */
+#home-btn:hover svg,
+.home-circle-btn:hover svg {
+    fill: #B033FF;
+}
+
 .settings-grid {
     display: flex;
     gap: 50px;
@@ -386,22 +472,18 @@ body {
     margin-top: 35px;
 }
 
-/* Kotak Transparent Dengan Pink Border */
 .settings-box {
     flex: 1;
     position: relative;
-    background-color: transparent;
     border: 4.5px solid #CC3399;
     border-radius: 40px;
-    padding: 60px 35px 40px 35px;
-    /* Extra padding untuk butang besar */
+    padding: 40px 25px 20px 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-/* Badge Header "Audio" & "Bahasa" */
 .box-header-badge {
     position: absolute;
     top: -34px;
@@ -417,8 +499,6 @@ body {
     color: #E70B90;
     font-family: "Berlin Sans FB", "Arial Rounded MT Bold", sans-serif;
     font-size: 2.6rem;
-    font-weight: normal;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .header-audio {
@@ -429,7 +509,6 @@ body {
     background-color: #CFE1F7;
 }
 
-/* Kawalan Audio Body */
 .audio-control-body {
     display: flex;
     gap: 45px;
@@ -438,110 +517,96 @@ body {
     width: 100%;
 }
 
-/* Peluncur Isipadu (Slider Vertikal) */
+/* Lock slider container layout so it doesn't push neighboring buttons */
 .volume-slider-container {
+    position: relative;
+    width: 60px;
+    height: 220px;
+    /* Increased height to align with side buttons */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    justify-content: flex-end;
+    margin-top: -15px;
+    /* Pulls the slider up */
 }
 
 #volume-slider {
     -webkit-appearance: none;
     appearance: none;
-    width: 160px;
+    position: absolute;
+    top: 42%;
+    /* Shifted center position upwards */
+    left: 50%;
+    width: 150px;
     height: 22px;
     background: linear-gradient(to right, #E70B90 100%, #FFCCE5 0%);
-    /* Latar awal */
     border-radius: 11px;
     outline: none;
     cursor: pointer;
-    transform: rotate(-90deg);
-    transform-origin: center;
-    margin: 70px -60px;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    margin: 0;
 }
 
 #volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none;
     width: 38px;
     height: 38px;
     border-radius: 50%;
     background: #FFFFCC;
     border: 4px solid #CC3399;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-#volume-slider::-moz-range-thumb {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: #FFFFCC;
-    border: 4px solid #CC3399;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
+/* Ensure the percentage text has fixed height so it won't shift layout when values change */
 #volume-percentage {
     font-family: "Franklin Gothic Heavy", "Arial Black", sans-serif;
     color: #E70B90;
     font-size: 1.6rem;
     font-weight: bold;
+    height: 25px;
+    line-height: 25px;
+    z-index: 2;
 }
 
-/* KUMPULAN BUTANG AUDIO (Dibesarkan) */
 .audio-btn-group {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Butang Aksi Audio (Selaraskan Ikon dalam 1 Baris Lurus) */
 .settings-action-btn {
     width: 290px;
     height: 62px;
     background-color: #E7F7A8;
-    border: 4.5px solid #CC3399;
+    border: 4px solid #CC3399;
     color: #E70B90;
-    font-family: "Franklin Gothic Medium", "Arial", sans-serif;
+    font-family: "Franklin Gothic Heavy", "Franklin Gothic Medium", "Arial Black", sans-serif;
     font-size: 1.85rem;
-    font-weight: normal;
     border-radius: 35px;
-
-    /* Gunakan grid untuk menetapkan lajur ikon & teks yang tetap */
     display: grid;
     grid-template-columns: 50px 1fr;
-    /* 50px khas untuk ikon, baki ruang untuk teks */
     align-items: center;
     padding-left: 25px;
-    /* Jarak tetap dari tepi kiri butang */
-
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .settings-action-btn:hover {
-    transform: translateY(2px);
-    background-color: #FFFFCC !important;
+    transform: translateY(-4px);
+    background-color: #FFCCFF !important;
 }
 
-/* Tetapan Ikon & Teks di Dalam Butang */
 .btn-icon {
     font-size: 1.7rem;
     text-align: center;
-    /* Memastikan ikon tepat di tengah-tengah lajur 50px */
-    display: block;
 }
 
-/* Memastikan teks sentiasa duduk di tengah baki ruang */
 .settings-action-btn span:not(.btn-icon) {
     text-align: left;
     padding-left: 10px;
 }
 
-/* KUMPULAN BUTANG BAHASA & BENDERA (Dibesarkan & Diberi Jarak) */
 .lang-btn-group {
     display: flex;
     flex-direction: column;
@@ -550,36 +615,20 @@ body {
     align-items: center;
 }
 
-/* Butang Pilihan Bahasa */
 .lang-option-btn {
     position: relative;
     width: 330px;
-    /* Panjang butang ditambah supaya teks selesa */
     height: 68px;
-    /* Tinggi butang ditambah */
     background-color: #CFE1F7;
-    border: 4.5px solid #CC3399;
+    border: 4px solid #CC3399;
     border-radius: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding-left: 65px;
-    /* Ruang lebih supaya teks tidak langgar bendera */
     padding-right: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Teks Bahasa Dalam Butang */
-.lang-text {
-    color: #E70B90;
-    font-family: "Franklin Gothic Heavy", "Arial Black", sans-serif;
-    font-size: 1.75rem;
-    font-weight: bold;
-    white-space: nowrap;
-    /* Menghalang teks berlipat/terhimpit */
-}
-
-/* Ikon Bendera Bulat Utama */
 .flag-icon {
     position: absolute;
     left: -15px;
@@ -589,11 +638,9 @@ body {
     height: 68px;
     border-radius: 50%;
     border: 4px solid #CC3399;
-    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.18);
     z-index: 5;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
 }
 
 /* Bendera Malaysia: Fokus kanton biru + bulan & bintang tepat mengikut rujukan */
@@ -614,26 +661,6 @@ body {
     background-color: #CC0000;
 }
 
-.btn-icon {
-    font-size: 1.6rem;
-}
-
-/* Footer Logo */
-.settings-footer {
-    bottom: 12px;
-}
-
-.settings-footer .footer-title {
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-}
-
-.settings-footer .footer-subtitle {
-    font-size: 2.2rem;
-    margin-top: -6px;
-}
-
-/* Back Button */
 #back-btn {
     position: absolute;
     bottom: 25px;
@@ -648,11 +675,488 @@ body {
     font-weight: bold;
     border-radius: 32px;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 #back-btn:hover {
-    transform: translateY(3px);
+    transform: translateY(-4px);
     background-color: #FFCCFF;
+}
+
+/* ==========================================
+   SCENE 6: CHAPTER MENU OVERLAY SCREEN
+   ========================================== */
+#scene6-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/bg fyp.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 45px;
+    z-index: 200;
+}
+
+#chapter-title {
+    font-family: "Cooper Black", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 3.8rem;
+    font-weight: 900;
+    text-align: center;
+    margin: 0;
+}
+
+.chapter-buttons-container {
+    position: relative;
+    width: 130%;
+    max-width: 1100px;
+    height: 380px;
+    margin-top: 100px;
+    /* Tambahkan baris ini untuk turunkan seluruh kawasan button */
+}
+
+/* Tetapkan saiz asas yang sama untuk SEMUA button dalam Scene 6 */
+.chapter-card-btn {
+    position: absolute;
+    width: 420px;
+    /* Panjang seragam untuk semua button */
+    height: 100px;
+    /* Tinggi seragam untuk semua button */
+    background-color: #FABFD7;
+    border: 4px solid #E680CC;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.chapter-card-btn:hover {
+    transform: translateY(-6px);
+    background-color: #FFFF99;
+}
+
+/* Kedudukan Button Kiri (Asas) */
+.card-left {
+    top: 20px;
+    left: 40px;
+}
+
+/* Kedudukan Button Kanan (Penjagaan) */
+.card-right {
+    top: 20px;
+    right: 40px;
+}
+
+/* Kedudukan Button Tengah (Kesihatan & Kesedaran) */
+.card-center {
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.card-center:hover {
+    transform: translate(-50%, -6px);
+}
+
+.card-icon-circle {
+    position: absolute;
+    left: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.icon-bg-blue {
+    background-color: #CCFFFF;
+}
+
+.icon-bg-cyan {
+    background-color: #CCEAFF;
+}
+
+.icon-bg-purple {
+    background-color: #CFDEFC;
+}
+
+.card-emoji {
+    font-size: 2.6rem;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.health-svg-icon {
+    width: 46px;
+    height: 46px;
+    fill: #DC03A0;
+    display: block;
+    margin: auto;
+}
+
+.card-label {
+    flex: 1;
+    text-align: center;
+    padding-left: 55px;
+    padding-right: 20px;
+    font-family: "Franklin Gothic Heavy", "Franklin Gothic Medium", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 2.1rem;
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+/* ==========================================
+   SCENE 7: SUB-MENU ASAS OVERLAY SCREEN
+   ========================================== */
+#scene7-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/bg fyp.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 45px;
+    z-index: 200;
+}
+
+#asas-title {
+    font-family: "Cooper Black", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 3.8rem;
+    font-weight: 900;
+    text-align: center;
+    margin: 0;
+}
+
+/* MENJARAKKAN BUTTON ANTARA SATU SAMA LAIN */
+.sub-menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px 100px;
+    /* Jarak menegak (40px) dan jarak melintang (60px) ditambah */
+    width: 85%;
+    max-width: 1000px;
+    /* Lebarkan kawasan grid button */
+    margin-top: 100px;
+}
+
+.sub-menu-btn {
+    height: 110px;
+    /* Tinggi button ditambah supaya teks lebih selesa */
+    background-color: #B4D4F0;
+    border: 4px solid #E680CC;
+    border-radius: 30px;
+    font-family: "Franklin Gothic Heavy", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 2.2rem;
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 15px 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.sub-menu-btn:hover {
+    transform: translateY(-5px);
+    background-color: #FFCCFF;
+}
+
+.sub-back-btn {
+    position: absolute;
+    bottom: 25px;
+    right: 35px;
+    width: 190px;
+    height: 56px;
+    background-color: #FFFFCC;
+    border: 4px solid #339933;
+    color: #009966;
+    font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+    font-size: 1.65rem;
+    font-weight: bold;
+    border-radius: 32px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.sub-back-btn:hover {
+    transform: translateY(-4px);
+    background-color: #FFCCFF;
+}
+
+/* ==========================================
+   SCENE 8: SUB-MENU PENJAGAAN OVERLAY SCREEN
+   ========================================== */
+#scene8-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/bg fyp.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 45px;
+    z-index: 200;
+}
+
+#penjagaan-title {
+    font-family: "Cooper Black", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 3.8rem;
+    font-weight: 900;
+    text-align: center;
+    margin: 0;
+}
+
+.sub-menu-btn.green-btn {
+    background-color: #CFE4D1;
+    border: 4px solid #E680CC;
+}
+
+.sub-menu-btn.green-btn:hover {
+    background-color: #FFCCCC;
+}
+
+/* ==========================================
+   SCENE 9: SUB-MENU KESIHATAN & KESEDARAN
+   ========================================== */
+#scene9-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/bg fyp.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 30px;
+    z-index: 200;
+}
+
+#kesihatan-title {
+    font-family: "Cooper Black", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 3.2rem;
+    font-weight: 900;
+    text-align: center;
+    margin: 0;
+    line-height: 1.1;
+}
+
+/* Warna butang kuning mengikut imej rujukan Scene 9 */
+.sub-menu-btn.yellow-btn {
+    background-color: #FFED96;
+    border: 4px solid #EFA6CC;
+}
+
+.sub-menu-btn.yellow-btn:hover {
+    background-color: #CCFF99;
+}
+
+/* ==========================================
+   SCENE 10: QUIZ MENU OVERLAY SCREEN
+   ========================================== */
+#scene10-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/bg fyp.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 45px;
+    z-index: 200;
+}
+
+#quiz-title {
+    font-family: "Cooper Black", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 3.8rem;
+    font-weight: 900;
+    text-align: center;
+    margin: 0;
+}
+
+/* ==========================================
+   SCENE 11: QUIZ INTERFACE STYLING
+   ========================================== */
+#scene11-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/quiz bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 25px;
+    z-index: 200;
+}
+
+/* Question Container */
+.question-container {
+    position: relative;
+    z-index: 210;
+    width: 80%;
+    max-width: 1100px;
+    margin-top: 40px;
+    text-align: center;
+}
+
+#quiz-question-text {
+    font-family: "Dream Orphans Regular", "Dream Orphans", sans-serif;
+    font-size: 2.6rem;
+    font-weight: normal;
+    color: #000;
+    line-height: 1.3;
+}
+
+/* Options Grid */
+.options-grid {
+    position: relative;
+    z-index: 210;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 40px;
+    width: 85%;
+    max-width: 950px;
+    margin-top: 100px;
+}
+
+.option-btn {
+    min-height: 110px;
+    background-color: #FFED96;
+    border: 4px solid #E680CC;
+    border-radius: 25px;
+    font-family: "Franklin Gothic Demi Cond", "Franklin Gothic Medium Condensed", "Arial Narrow", sans-serif;
+    font-size: 1.6rem;
+    font-weight: normal;
+    color: #000;
+    padding: 15px 20px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.option-btn:hover {
+    transform: translateY(-4px);
+    background-color: #FFCC99;
+}
+
+/* Score Board */
+.score-board {
+    position: absolute;
+    top: 25px;
+    left: 45px;
+    font-family: "Arial Rounded MT Bold", "Arial Rounded MT", sans-serif;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #FF0000;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 6px 20px;
+    border-radius: 12px;
+    border: 2px solid #FF0000;
+    z-index: 220;
+}
+
+/* ==========================================
+   SCENE 12: QUIZ RESULT OVERLAY SCREEN
+   ========================================== */
+#scene12-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/quiz bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.result-box {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+#result-congrats {
+    font-family: "Dream Orphans Regular", "Dream Orphans", sans-serif;
+    font-size: 4.5rem;
+    color: #000;
+    font-weight: normal;
+    margin-bottom: 67px;
+}
+
+#result-motto {
+    font-family: "Dream Orphans Regular", "Dream Orphans", sans-serif;
+    font-size: 3.5rem;
+    color: #000;
+    font-weight: normal;
+    margin-bottom: 60px;
+}
+
+.score-display-line {
+    font-family: "Dream Orphans Regular", "Dream Orphans", sans-serif;
+    font-size: 3.5rem;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+#final-score-val {
+    font-weight: bold;
 }
