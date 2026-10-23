@@ -25,20 +25,22 @@ body {
 }
 
 /* Pastikan kontainer utama selalu memenuhi layar */
+/* Pastikan bekas utama mengikut saiz skrin tanpa diputar secara paksa */
 #player-container {
     position: relative;
     width: 100vw;
     height: 100vh;
+    background-color: #a6f2eb;
     overflow: hidden;
 }
 
-/* Penyesuaian ukuran tombol layar penuh di kiri atas */
+/* Tetapan Butang Fullscreen di Kiri Atas */
 #fullscreen-btn {
     position: fixed;
-    top: 15px;
-    left: 15px;
-    width: 48px;
-    height: 48px;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
     background-color: #FFFFFF;
     border: none;
     border-radius: 50%;
@@ -48,27 +50,64 @@ body {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 99999;
+    /* Sentiasa berada di lapisan paling atas */
+    padding: 0;
 }
 
 #fullscreen-btn svg {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     fill: #52B2EC;
 }
 
-/* Pesan arahan jika HP dipegang tegak (opsional) */
-@media screen and (orientation: portrait) and (max-width: 768px) {
+/* Mengatur saiz elemen supaya muat dengan kemas dalam skrin melintang telefon */
+@media screen and (max-height: 500px) {
     #start-app-btn {
-        font-size: 1.5rem;
-        padding: 15px 30px;
+        padding: 15px 40px;
+        font-size: 1.6rem;
     }
 
     .menu-title {
-        font-size: 3rem;
+        font-size: 3.5rem;
     }
 
     .menu-subtitle {
-        font-size: 5rem;
+        font-size: 5.5rem;
+    }
+
+    .menu-btn {
+        width: 260px;
+        height: 55px;
+        font-size: 1.8rem;
+    }
+
+    .chapter-buttons-container {
+        height: 260px;
+        margin-top: 40px;
+    }
+
+    .chapter-card-btn {
+        width: 320px;
+        height: 75px;
+    }
+
+    .card-label {
+        font-size: 1.5rem;
+    }
+
+    .card-icon-circle {
+        width: 75px;
+        height: 75px;
+    }
+
+    .sub-menu-grid {
+        gap: 20px 40px;
+        margin-top: 30px;
+    }
+
+    .sub-menu-btn {
+        height: 75px;
+        font-size: 1.4rem;
     }
 }
 

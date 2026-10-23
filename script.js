@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function toggleFullscreen() {
         try {
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                // Masuk Fullscreen
+                // 1. Masuk mod Layar Penuh
                 const elem = document.documentElement;
                 if (elem.requestFullscreen) {
                     await elem.requestFullscreen();
@@ -152,26 +152,27 @@ document.addEventListener("DOMContentLoaded", () => {
                     await elem.webkitRequestFullscreen();
                 }
 
-                // Kunci skrin ke mod lanskap pada telefon/tablet
+                // 2. Kunci orientasi skrin ke Melintang (Landscape) secara automatik
                 if (screen.orientation && screen.orientation.lock) {
                     await screen.orientation.lock("landscape").catch((err) => {
-                        console.log("Penguncian orientasi tidak didukung atau disekat:", err);
+                        console.log("Kunci orientasi disekat oleh peranti/pelayar:", err);
                     });
                 }
             } else {
-                // Keluar Fullscreen
+                // Keluar mod Layar Penuh
                 if (document.exitFullscreen) {
                     await document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) {
                     await document.webkitExitFullscreen();
                 }
 
+                // Buka semula kunci orientasi
                 if (screen.orientation && screen.orientation.unlock) {
                     screen.orientation.unlock();
                 }
             }
         } catch (err) {
-            console.error("Gagal menukar skrin penuh:", err);
+            console.error("Ralat skrin penuh:", err);
         }
     }
 
@@ -180,10 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (fullscreenIcon) {
             if (isFullscreen) {
-                // Ikon kecilkan skrin
+                // Ikon Kecilkan Skrin
                 fullscreenIcon.innerHTML = `<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>`;
             } else {
-                // Ikon besarkan skrin
+                // Ikon Besarkan Skrin
                 fullscreenIcon.innerHTML = `<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>`;
             }
         }
